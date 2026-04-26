@@ -61,6 +61,12 @@ QUOTE_REQUEST_RECIPIENT_EMAIL=infoprintaqui@gmail.com
 
 ## Deploy VPS
 
+Guida completa per IONOS/Ubuntu:
+
+```text
+docs/deploy-ionos-vps.md
+```
+
 Flusso consigliato:
 
 ```bash
