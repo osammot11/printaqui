@@ -15,7 +15,7 @@ echo "==> Install PHP dependencies"
 "$COMPOSER_BIN" install --no-dev --optimize-autoloader --no-interaction
 
 echo "==> Install and build frontend assets"
-"$NPM_BIN" ci
+"$NPM_BIN" install
 "$NPM_BIN" run build
 
 echo "==> Laravel maintenance tasks"

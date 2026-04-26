@@ -72,7 +72,7 @@ Flusso consigliato:
 ```bash
 git pull origin main
 composer install --no-dev --optimize-autoloader
-npm ci
+npm install
 npm run build
 php artisan migrate --force
 php artisan config:cache

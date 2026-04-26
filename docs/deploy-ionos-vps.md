@@ -81,7 +81,7 @@ php artisan key:generate
 
 ```bash
 composer install --no-dev --optimize-autoloader
-npm ci
+npm install
 npm run build
 php artisan migrate --force
 php artisan db:seed --force
