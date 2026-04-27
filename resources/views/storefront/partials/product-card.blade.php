@@ -6,9 +6,9 @@
     <a href="{{ route('products.show', $product) }}">
         <img class="product-media" src="{{ $image }}" alt="{{ $product->name }}">
     </a>
-    <div class="card-body">
+    <div class="stack-small top-margin-mid">
         <div class="muted">{{ $product->category?->name ?? 'Apparel' }}</div>
-        <h3 style="margin:8px 0 0; font-size:20px;">{{ $product->name }}</h3>
-        <div class="price">€ {{ number_format($product->currentPriceCents() / 100, 2, ',', '.') }}</div>
+        <h5>{{ $product->name }}</h5>
+        <p>€ {{ number_format($product->currentPriceCents() / 100, 2, ',', '.') }}</p>
     </div>
 </article>

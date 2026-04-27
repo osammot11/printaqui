@@ -130,26 +130,7 @@
             });
         }
 
-        if (canHover) {
-            visibleElements('.card, .collection-card').forEach(function (card) {
-                card.addEventListener('mouseenter', function () {
-                    gsap.to(card, {
-                        y: -4,
-                        duration: 0.22,
-                        ease: 'power2.out',
-                    });
-                });
 
-                card.addEventListener('mouseleave', function () {
-                    gsap.to(card, {
-                        y: 0,
-                        duration: 0.26,
-                        ease: 'power2.out',
-                        clearProps: 'transform',
-                    });
-                });
-            });
-        }
 
         const mainProductImage = document.querySelector('[data-main-product-image]');
         visibleElements('[data-gallery-image]').forEach(function (button) {

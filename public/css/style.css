@@ -179,11 +179,13 @@ button {
     font-weight: 400;
     cursor: pointer;
     text-align: center;
+    transition: transform 0.3s ease;
 }
 
 .button:hover,
 button:hover {
     background: var(--primary-hover);
+    transform: scale(1.02) translateY(-2px);
 }
 
 .button.secondary {
@@ -271,10 +273,6 @@ h2 {
 
 .card {
     overflow: hidden;
-}
-
-.card-body {
-    margin-top: 24px;
 }
 
 .product-media {
@@ -766,8 +764,8 @@ th {
     padding: 0 6px;
     border: 2px solid var(--bg-card);
     border-radius: 999px;
-    background: var(--accent);
-    color: var(--text-primary);
+    background: var(--primary);
+    color: var(--bg-card);
     font-size: 12px;
     font-weight: 800;
     line-height: 1;
