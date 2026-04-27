@@ -117,6 +117,42 @@
             </form>
         </div>
     </section>
+
+    @if ($relatedProducts->isNotEmpty())
+        <section class="section product-related-section">
+            <div class="wrap">
+                <div class="section-head">
+                    <div>
+                        <h2>Prodotti consigliati</h2>
+                        <p class="muted">Altri capi configurabili con la stessa logica blank o stampa DTF.</p>
+                    </div>
+                    <a class="button secondary" href="{{ route('shop.index') }}">Vai allo shop</a>
+                </div>
+                <div class="grid">
+                    @foreach ($relatedProducts as $relatedProduct)
+                        @include('storefront.partials.product-card', ['product' => $relatedProduct])
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <section class="section product-faq-section">
+        <div class="wrap product-faq-layout">
+            <div>
+                <h2>FAQ prodotto</h2>
+                <p class="muted">Le risposte rapide prima di aggiungere il capo al carrello.</p>
+            </div>
+            <div class="product-faq-list">
+                @foreach ($productFaqs as $faq)
+                    <details class="product-faq-item" @if($loop->first) open @endif>
+                        <summary>{{ $faq['question'] }}</summary>
+                        <p>{{ $faq['answer'] }}</p>
+                    </details>
+                @endforeach
+            </div>
+        </div>
+    </section>
 @endsection
 
 @push('scripts')

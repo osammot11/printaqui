@@ -86,8 +86,47 @@ class StorefrontController extends Controller
     {
         abort_unless($product->is_active, 404);
 
-        $product->load(['variants' => fn ($query) => $query->where('is_active', true), 'activePrintZones']);
+        $product->load(['category', 'variants' => fn ($query) => $query->where('is_active', true), 'activePrintZones']);
 
-        return view('storefront.product', compact('product'));
+        $relatedProducts = Product::with(['category', 'variants'])
+            ->where('is_active', true)
+            ->whereKeyNot($product->id)
+            ->when($product->category_id, fn ($query) => $query->where('category_id', $product->category_id))
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        if ($relatedProducts->count() < 3) {
+            $fallbackProducts = Product::with(['category', 'variants'])
+                ->where('is_active', true)
+                ->whereKeyNot($product->id)
+                ->whereNotIn('id', $relatedProducts->pluck('id'))
+                ->latest()
+                ->limit(3 - $relatedProducts->count())
+                ->get();
+
+            $relatedProducts = $relatedProducts->concat($fallbackProducts);
+        }
+
+        $productFaqs = [
+            [
+                'question' => 'Posso ordinare il prodotto senza stampa?',
+                'answer' => 'Si. Se non selezioni zone di stampa, il prodotto viene aggiunto al carrello come blank.',
+            ],
+            [
+                'question' => 'Che file posso caricare per la stampa?',
+                'answer' => 'Puoi caricare PNG, JPG, JPEG, AVIF, PDF o SVG. Ogni file puo pesare fino a 20MB.',
+            ],
+            [
+                'question' => 'Come funziona l ordine bulk per taglie?',
+                'answer' => 'Scegli il colore, inserisci le quantita sulle taglie disponibili e usa la stessa configurazione stampa per tutte le quantita selezionate.',
+            ],
+            [
+                'question' => 'Quando viene calcolato il prezzo finale?',
+                'answer' => 'Il prezzo unitario si aggiorna mentre selezioni le zone di stampa. Nel carrello trovi il totale basato su quantita, stampa e spedizione.',
+            ],
+        ];
+
+        return view('storefront.product', compact('product', 'relatedProducts', 'productFaqs'));
     }
 }

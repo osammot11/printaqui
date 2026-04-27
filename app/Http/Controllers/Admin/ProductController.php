@@ -102,11 +102,21 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
-        $product->update(['is_active' => false]);
+        $request->validate([
+            'delete_product_confirmation' => ['accepted'],
+        ]);
 
-        return redirect()->route('admin.products.index')->with('status', 'Prodotto disattivato.');
+        DB::transaction(function () use ($product) {
+            $product->variants()->delete();
+            $product->printZones()->delete();
+            $product->delete();
+        });
+
+        Storage::disk('public')->deleteDirectory("products/{$product->id}");
+
+        return redirect()->route('admin.products.index')->with('status', 'Prodotto eliminato definitivamente.');
     }
 
     private function validatedProduct(Request $request): array

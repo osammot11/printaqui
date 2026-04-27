@@ -20,13 +20,20 @@
                 <a class="{{ request()->routeIs('shop.*', 'products.*') ? 'is-active' : '' }}" href="{{ route('shop.index') }}">Shop</a>
                 <a class="{{ request()->routeIs('collections.*') ? 'is-active' : '' }}" href="{{ route('collections.index') }}">Collezioni</a>
                 <a class="{{ request()->routeIs('search') ? 'is-active' : '' }}" href="{{ route('search') }}">Cerca</a>
-                <a class="{{ request()->routeIs('cart.*') ? 'is-active' : '' }}" href="{{ route('cart.show') }}">Carrello</a>
                 <a class="{{ request()->routeIs('orders.lookup*') ? 'is-active' : '' }}" href="{{ route('orders.lookup') }}">Ordine</a>
                 <a href="{{ route('contatti') }}" rel="noreferrer">Contatti</a>
             </nav>
 
             <div class="nav-actions">
                 <a href="{{ route('quote.create') }}" class="button mobile-hide">Preventivo</a>
+                <a class="cart-icon-link {{ request()->routeIs('cart.*') ? 'is-active' : '' }}" href="{{ route('cart.show') }}" aria-label="Carrello, {{ $cartCount }} articoli">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6.2 6h15l-1.7 8.5a2 2 0 0 1-2 1.5H9.1a2 2 0 0 1-2-1.6L5.3 3H2.8" />
+                        <path d="M9 20.2h.01" />
+                        <path d="M17 20.2h.01" />
+                    </svg>
+                    <span class="cart-icon-count">{{ $cartCount }}</span>
+                </a>
 
                 <button class="menu-toggle" type="button" aria-label="Apri menu" aria-expanded="false">
                     <span></span>
@@ -42,7 +49,6 @@
                     <a class="{{ request()->routeIs('shop.*', 'products.*') ? 'is-active' : '' }}" href="{{ route('shop.index') }}">Shop</a>
                     <a class="{{ request()->routeIs('collections.*') ? 'is-active' : '' }}" href="{{ route('collections.index') }}">Collezioni</a>
                     <a class="{{ request()->routeIs('search') ? 'is-active' : '' }}" href="{{ route('search') }}">Cerca</a>
-                    <a class="{{ request()->routeIs('cart.*') ? 'is-active' : '' }}" href="{{ route('cart.show') }}">Carrello @if($cartCount > 0)({{ $cartCount }})@endif</a>
                     <a class="{{ request()->routeIs('orders.lookup*') ? 'is-active' : '' }}" href="{{ route('orders.lookup') }}">Ordine</a>
                     <a class="{{ request()->routeIs('quote.*') ? 'is-active' : '' }}" href="{{ route('quote.create') }}">Preventivo</a>
                     <a href="{{ route('contatti') }}" class="button top-margin-mid" rel="noreferrer">Scrivici</a>

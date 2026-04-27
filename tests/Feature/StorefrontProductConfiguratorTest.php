@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -69,5 +70,44 @@ class StorefrontProductConfiguratorTest extends TestCase
             ->assertSee("variant_quantities[{$blackSmall->id}]", false)
             ->assertSee("variant_quantities[{$blackMedium->id}]", false)
             ->assertSee("variant_quantities[{$whiteSmall->id}]", false);
+    }
+
+    public function test_product_page_shows_related_products_and_faq_accordion(): void
+    {
+        $category = Category::create([
+            'name' => 'T-shirt',
+            'slug' => 't-shirt',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'T-shirt principale',
+            'slug' => 't-shirt-principale',
+            'sku' => 'PA-MAIN',
+            'base_price_cents' => 1990,
+            'estimated_delivery' => '7-10 giorni lavorativi',
+            'is_active' => true,
+        ]);
+
+        Product::create([
+            'category_id' => $category->id,
+            'name' => 'T-shirt consigliata',
+            'slug' => 't-shirt-consigliata',
+            'sku' => 'PA-RELATED',
+            'base_price_cents' => 2490,
+            'estimated_delivery' => '7-10 giorni lavorativi',
+            'is_active' => true,
+        ]);
+
+        $this
+            ->get(route('products.show', ['product' => $product->slug]))
+            ->assertOk()
+            ->assertSee('Prodotti consigliati')
+            ->assertSee('T-shirt consigliata')
+            ->assertSee('FAQ prodotto')
+            ->assertSee('<details class="product-faq-item"', false)
+            ->assertSee('Posso ordinare il prodotto senza stampa?');
     }
 }

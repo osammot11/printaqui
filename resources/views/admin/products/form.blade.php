@@ -196,6 +196,24 @@
         <div style="margin-top:16px;"><button>Salva prodotto</button></div>
     </form>
 
+    @if ($product->exists)
+        <form class="panel admin-danger-zone" method="post" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Confermi di voler eliminare definitivamente questo prodotto? Questa operazione non puo essere annullata.');">
+            @csrf
+            @method('delete')
+            <div class="section-head">
+                <div>
+                    <h2 style="font-size:22px;">Elimina prodotto</h2>
+                    <p class="muted">Questa azione rimuove prodotto, varianti, zone stampa e media caricati. Gli ordini storici restano consultabili con i dati salvati in fase di acquisto.</p>
+                </div>
+                <button class="button danger" type="submit">Elimina definitivamente</button>
+            </div>
+            <label class="checkbox-row top-margin-mid">
+                <input required type="checkbox" name="delete_product_confirmation" value="1">
+                <span>Confermo di voler eliminare definitivamente {{ $product->name }}.</span>
+            </label>
+        </form>
+    @endif
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const setupRepeater = ({ listSelector, templateId, addSelector, emptySelector, rowSelector, removeSelector }) => {
