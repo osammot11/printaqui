@@ -1,6 +1,23 @@
 @extends('layouts.app', ['title' => $product->name.' - Printaqui'])
 
 @section('content')
+    @php
+        $variantColorGroups = $product->variants
+            ->groupBy(fn ($variant) => trim($variant->color).'|'.strtolower(trim((string) $variant->hex_color)))
+            ->values()
+            ->map(function ($variants, $index) {
+                $firstVariant = $variants->first();
+
+                return [
+                    'key' => 'color-'.$index,
+                    'label' => $firstVariant->color,
+                    'hex' => $firstVariant->hex_color ?: '#f3f4f6',
+                    'stock' => $variants->sum('stock'),
+                    'variants' => $variants,
+                ];
+            });
+    @endphp
+
     <section class="section">
         <div class="wrap product-layout">
             <div>
@@ -33,25 +50,51 @@
                 <p class="muted top-margin-small">A partire da {{ number_format($product->currentPriceCents() / 100, 2, ',', '.') }}€</p>
 
                 <h4 class="top-margin-large">Quantita per variante</h4>
-                <table class="top-margin-mid">
-                    <thead>
-                        <tr><th>Taglia</th><th>Colore</th><th>Disponibili</th><th>Qta</th></tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($product->variants as $variant)
-                            <tr class="@if($variant->stock <= 0) product-variant-unavailable @endif">
-                                <td>{{ $variant->size }}</td>
-                                <td>{{ $variant->color }}</td>
-                                <td>{{ $variant->stock }}</td>
-                                <td><input min="0" max="{{ $variant->stock }}" type="number" name="variant_quantities[{{ $variant->id }}]" value="0" @disabled($variant->stock <= 0)></td>
-                            </tr>
-                        @empty
+                @if ($variantColorGroups->isNotEmpty())
+                    <div class="product-color-selector" role="list" aria-label="Scegli colore">
+                        @foreach ($variantColorGroups as $colorGroup)
+                            <button
+                                class="product-color-pill"
+                                type="button"
+                                style="--swatch-color: {{ $colorGroup['hex'] }};"
+                                data-color-option
+                                data-color-key="{{ $colorGroup['key'] }}"
+                                data-color-label="{{ $colorGroup['label'] }}"
+                                aria-pressed="false"
+                            >
+                                <span class="product-color-swatch" aria-hidden="true"></span>
+                                <span class="product-color-pill-label">{{ $colorGroup['label'] }}</span>
+                                <span class="product-color-pill-stock">{{ $colorGroup['stock'] }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                    <p class="muted product-color-active-copy">Colore selezionato: <strong data-active-color-label>{{ $variantColorGroups->first()['label'] }}</strong></p>
+
+                    <table class="top-margin-mid product-variant-table">
+                        <thead>
+                            <tr><th>Taglia</th><th>Disponibili</th><th>Qta</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($variantColorGroups as $colorGroup)
+                                @foreach ($colorGroup['variants'] as $variant)
+                                    <tr class="@if($variant->stock <= 0) product-variant-unavailable @endif" data-variant-color="{{ $colorGroup['key'] }}">
+                                        <td>{{ $variant->size }}</td>
+                                        <td>{{ $variant->stock }}</td>
+                                        <td><input min="0" max="{{ $variant->stock }}" type="number" name="variant_quantities[{{ $variant->id }}]" value="0" @disabled($variant->stock <= 0)></td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <table class="top-margin-mid">
+                        <tbody>
                             <tr>
-                                <td colspan="4">Nessuna variante disponibile.</td>
+                                <td>Nessuna variante disponibile.</td>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                @endif
 
                 <h4 class="top-margin-large">Personalizzazione opzionale</h4>
                 @foreach ($product->activePrintZones as $zone)
@@ -83,6 +126,9 @@
     const unitPrice = document.getElementById('unit-price');
     const mainProductImage = document.querySelector('[data-main-product-image]');
     const galleryButtons = document.querySelectorAll('[data-gallery-image]');
+    const colorButtons = document.querySelectorAll('[data-color-option]');
+    const variantRows = document.querySelectorAll('[data-variant-color]');
+    const activeColorLabel = document.querySelector('[data-active-color-label]');
 
     function formatCents(cents) {
         return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(cents / 100);
@@ -109,5 +155,30 @@
             button.classList.add('is-active');
         });
     });
+
+    function selectVariantColor(colorKey) {
+        colorButtons.forEach((button) => {
+            const isActive = button.dataset.colorKey === colorKey;
+
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+            if (isActive && activeColorLabel) {
+                activeColorLabel.textContent = button.dataset.colorLabel;
+            }
+        });
+
+        variantRows.forEach((row) => {
+            row.hidden = row.dataset.variantColor !== colorKey;
+        });
+    }
+
+    colorButtons.forEach((button) => {
+        button.addEventListener('click', () => selectVariantColor(button.dataset.colorKey));
+    });
+
+    if (colorButtons.length > 0) {
+        selectVariantColor(colorButtons[0].dataset.colorKey);
+    }
 </script>
 @endpush
