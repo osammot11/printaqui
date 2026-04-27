@@ -479,7 +479,6 @@ th {
 .product-color-pill.is-active {
     border-color: var(--primary);
     background: rgba(255, 231, 25, .14);
-    box-shadow: 0 0 0 4px rgba(255, 231, 25, .28);
 }
 
 .product-color-swatch {
@@ -802,7 +801,7 @@ th {
 .mobile-cta:hover {
     background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(255, 214, 0, 0.28);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .menu-toggle {
@@ -1410,7 +1409,7 @@ th {
 .admin-variant-color-pill.is-active {
     border-color: var(--primary);
     background: rgba(255, 231, 25, .14);
-    box-shadow: 0 0 0 4px rgba(255, 231, 25, .24);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);
 }
 
 .admin-variant-color-swatch {
