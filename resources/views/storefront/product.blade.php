@@ -60,11 +60,10 @@
                                 data-color-option
                                 data-color-key="{{ $colorGroup['key'] }}"
                                 data-color-label="{{ $colorGroup['label'] }}"
+                                aria-label="Seleziona colore {{ $colorGroup['label'] }}"
                                 aria-pressed="false"
                             >
                                 <span class="product-color-swatch" aria-hidden="true"></span>
-                                <span class="product-color-pill-label">{{ $colorGroup['label'] }}</span>
-                                <span class="product-color-pill-stock">{{ $colorGroup['stock'] }}</span>
                             </button>
                         @endforeach
                     </div>

@@ -60,7 +60,12 @@ class StorefrontProductConfiguratorTest extends TestCase
             ->assertSee('style="--swatch-color: #ffffff;"', false)
             ->assertSee('data-variant-color="color-0"', false)
             ->assertSee('data-variant-color="color-1"', false)
+            ->assertSee('aria-label="Seleziona colore Nero"', false)
+            ->assertSee('aria-label="Seleziona colore Bianco"', false)
             ->assertSee('Colore selezionato:', false)
+            ->assertSee('data-active-color-label', false)
+            ->assertDontSee('product-color-pill-label', false)
+            ->assertDontSee('product-color-pill-stock', false)
             ->assertSee("variant_quantities[{$blackSmall->id}]", false)
             ->assertSee("variant_quantities[{$blackMedium->id}]", false)
             ->assertSee("variant_quantities[{$whiteSmall->id}]", false);
