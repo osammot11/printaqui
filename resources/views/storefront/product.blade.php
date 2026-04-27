@@ -62,7 +62,7 @@
                         </label>
                         <div id="file-{{ $zone->id }}" style="display:none; margin-top:10px;">
                             <label>File per {{ $zone->name }}</label>
-                            <input type="file" name="print_files[{{ $zone->id }}]" accept=".png,.jpg,.jpeg,.pdf,.svg">
+                            <input type="file" name="print_files[{{ $zone->id }}]" accept=".png,.jpg,.jpeg,.avif,.pdf,.svg">
                         </div>
                     </div>
                 @endforeach

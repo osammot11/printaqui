@@ -70,13 +70,13 @@
             <div class="form-grid top-margin-large">
                 <div class="row">
                     <label>Nuove immagini prodotto</label>
-                    <input type="file" name="media_images[]" accept="image/*" multiple>
-                    <small class="muted">Puoi selezionare piu immagini insieme. Max 10MB ciascuna.</small>
+                    <input type="file" name="media_images[]" accept=".jpg,.jpeg,.png,.gif,.webp,.avif,.svg,image/*" multiple>
+                    <small class="muted">JPG, PNG, GIF, WebP, AVIF o SVG. Max 10MB ciascuna.</small>
                 </div>
 
                 <div class="row">
                     <label>Tabella taglie</label>
-                    <input type="file" name="size_chart_file" accept=".png,.jpg,.jpeg,.pdf">
+                    <input type="file" name="size_chart_file" accept=".png,.jpg,.jpeg,.webp,.avif,.pdf">
                     @if ($product->sizeChartUrl())
                         <div class="top-margin-small">
                             <a class="button secondary" href="{{ $product->sizeChartUrl() }}" target="_blank" rel="noreferrer">Apri tabella attuale</a>

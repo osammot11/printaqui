@@ -67,8 +67,8 @@
 
                     <div class="row" style="grid-column:1/-1">
                         <label>File o mockup</label>
-                        <input type="file" name="artwork" accept=".png,.jpg,.jpeg,.pdf,.svg">
-                        <small class="muted">PNG, JPG, PDF o SVG. Max 20MB.</small>
+                        <input type="file" name="artwork" accept=".png,.jpg,.jpeg,.avif,.pdf,.svg">
+                        <small class="muted">PNG, JPG, AVIF, PDF o SVG. Max 20MB.</small>
                     </div>
 
                     <div class="row" style="grid-column:1/-1">

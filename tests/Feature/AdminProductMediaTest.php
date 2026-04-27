@@ -44,4 +44,32 @@ class AdminProductMediaTest extends TestCase
         Storage::disk('public')->assertExists($product->mediaItems()[0]['path']);
         Storage::disk('public')->assertExists($product->size_chart['path']);
     }
+
+    public function test_admin_can_upload_avif_product_media(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.products.store'), [
+                'name' => 'T-shirt AVIF media test',
+                'sku' => 'PA-AVIF-MEDIA',
+                'base_price' => 19.90,
+                'estimated_delivery' => '7-10 giorni lavorativi',
+                'is_active' => '1',
+                'media_images' => [
+                    UploadedFile::fake()->create('front.avif', 200, 'image/avif'),
+                ],
+                'size_chart_file' => UploadedFile::fake()->create('size-chart.avif', 200, 'image/avif'),
+            ])
+            ->assertRedirect();
+
+        $product = Product::where('sku', 'PA-AVIF-MEDIA')->firstOrFail();
+
+        $this->assertSame('front.avif', $product->mediaItems()[0]['original_name']);
+        $this->assertSame('size-chart.avif', $product->size_chart['original_name']);
+        Storage::disk('public')->assertExists($product->mediaItems()[0]['path']);
+        Storage::disk('public')->assertExists($product->size_chart['path']);
+    }
 }

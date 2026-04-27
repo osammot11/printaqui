@@ -29,7 +29,7 @@ class QuoteRequestController extends Controller
             'print_positions' => ['nullable', 'string', 'max:500'],
             'deadline' => ['nullable', 'date'],
             'message' => ['required', 'string', 'max:5000'],
-            'artwork' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,svg', 'max:20480'],
+            'artwork' => ['nullable', 'file', 'mimes:png,jpg,jpeg,avif,pdf,svg', 'max:20480'],
         ]);
 
         $quote = DB::transaction(function () use ($request, $validated) {

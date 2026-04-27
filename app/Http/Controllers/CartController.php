@@ -34,7 +34,7 @@ class CartController extends Controller
             'print_zones' => ['nullable', 'array'],
             'print_zones.*' => ['integer'],
             'print_files' => ['nullable', 'array'],
-            'print_files.*' => ['file', 'mimes:png,jpg,jpeg,pdf,svg', 'max:20480'],
+            'print_files.*' => ['file', 'mimes:png,jpg,jpeg,avif,pdf,svg', 'max:20480'],
         ]);
 
         $variantQuantities = collect($validated['variant_quantities'])
