@@ -101,17 +101,23 @@
 
             @php $variants = old('variants', $product->exists ? $product->variants->toArray() : []); @endphp
 
+            <div class="admin-variant-color-tools" data-variant-color-toolbar hidden>
+                <button class="admin-variant-filter is-active" type="button" data-variant-color-filter="__all">Tutti</button>
+                <div class="admin-variant-color-options" data-variant-color-options></div>
+            </div>
+            <p class="muted admin-variant-active-copy" data-variant-color-copy hidden>Colore selezionato: <strong data-variant-active-color>Tutti</strong></p>
+
             <div class="variant-list" data-variant-list data-next-index="{{ count($variants) }}">
                 <div class="empty-state" data-variant-empty @if(count($variants)) hidden @endif>
                     Nessuna variante creata. Il prodotto restera senza varianti finche non ne aggiungi una.
                 </div>
 
                 @foreach ($variants as $index => $variant)
-                    <div class="variant-row" data-variant-row>
+                    <div class="variant-row" data-variant-row data-variant-color="{{ $variant['color'] ?? '' }}" data-variant-hex="{{ $variant['hex_color'] ?? '' }}">
                         <div class="form-grid">
                             <div class="row"><label>Taglia</label><input name="variants[{{ $index }}][size]" value="{{ $variant['size'] ?? '' }}" placeholder="S, M, L..."></div>
-                            <div class="row"><label>Colore</label><input name="variants[{{ $index }}][color]" value="{{ $variant['color'] ?? '' }}" placeholder="Nero, Bianco..."></div>
-                            <div class="row"><label>Hex</label><input name="variants[{{ $index }}][hex_color]" value="{{ $variant['hex_color'] ?? '' }}" placeholder="#111111"></div>
+                            <div class="row"><label>Colore</label><input name="variants[{{ $index }}][color]" value="{{ $variant['color'] ?? '' }}" placeholder="Nero, Bianco..." data-variant-color-input></div>
+                            <div class="row"><label>Hex</label><input name="variants[{{ $index }}][hex_color]" value="{{ $variant['hex_color'] ?? '' }}" placeholder="#111111" data-variant-hex-input></div>
                             <div class="row"><label>Stock</label><input type="number" min="0" name="variants[{{ $index }}][stock]" value="{{ $variant['stock'] ?? 0 }}"></div>
                             <div class="row"><label>SKU variante</label><input name="variants[{{ $index }}][sku]" value="{{ $variant['sku'] ?? '' }}" placeholder="Generato se vuoto"></div>
                             <div class="row"><label>Attiva</label><input style="width:auto" type="checkbox" name="variants[{{ $index }}][is_active]" value="1" @checked($variant['is_active'] ?? true)></div>
@@ -124,11 +130,11 @@
             </div>
 
             <template id="variant-row-template">
-                <div class="variant-row" data-variant-row>
+                <div class="variant-row" data-variant-row data-variant-color="" data-variant-hex="">
                     <div class="form-grid">
                         <div class="row"><label>Taglia</label><input name="variants[__INDEX__][size]" placeholder="S, M, L..."></div>
-                        <div class="row"><label>Colore</label><input name="variants[__INDEX__][color]" placeholder="Nero, Bianco..."></div>
-                        <div class="row"><label>Hex</label><input name="variants[__INDEX__][hex_color]" placeholder="#111111"></div>
+                        <div class="row"><label>Colore</label><input name="variants[__INDEX__][color]" placeholder="Nero, Bianco..." data-variant-color-input></div>
+                        <div class="row"><label>Hex</label><input name="variants[__INDEX__][hex_color]" placeholder="#111111" data-variant-hex-input></div>
                         <div class="row"><label>Stock</label><input type="number" min="0" name="variants[__INDEX__][stock]" value="0"></div>
                         <div class="row"><label>SKU variante</label><input name="variants[__INDEX__][sku]" placeholder="Generato se vuoto"></div>
                         <div class="row"><label>Attiva</label><input style="width:auto" type="checkbox" name="variants[__INDEX__][is_active]" value="1" checked></div>
@@ -210,6 +216,7 @@
 
                     list.insertAdjacentHTML('beforeend', html);
                     list.dataset.nextIndex = String(index + 1);
+                    list.dispatchEvent(new CustomEvent('repeater:added', { detail: { row: list.lastElementChild } }));
                     refreshEmptyState();
                 });
 
@@ -219,10 +226,136 @@
                     if (!removeButton) return;
 
                     removeButton.closest(rowSelector).remove();
+                    list.dispatchEvent(new CustomEvent('repeater:removed'));
                     refreshEmptyState();
                 });
 
                 refreshEmptyState();
+            };
+
+            const setupVariantColorFilter = () => {
+                const list = document.querySelector('[data-variant-list]');
+                const toolbar = document.querySelector('[data-variant-color-toolbar]');
+                const options = document.querySelector('[data-variant-color-options]');
+                const copy = document.querySelector('[data-variant-color-copy]');
+                const activeColorLabel = document.querySelector('[data-variant-active-color]');
+                const allButton = document.querySelector('[data-variant-color-filter="__all"]');
+
+                if (!list || !toolbar || !options || !copy || !activeColorLabel || !allButton) return;
+
+                let activeKey = '__all';
+
+                const rowColor = (row) => row.querySelector('[data-variant-color-input]')?.value.trim() || '';
+                const rowHex = (row) => row.querySelector('[data-variant-hex-input]')?.value.trim() || '';
+                const normalizeHex = (hex) => /^#[0-9a-f]{6}$/i.test(hex) ? hex : '#f3f4f6';
+                const colorKey = (color, hex) => `${color.toLowerCase()}|${hex.toLowerCase()}`;
+
+                const syncRowData = (row) => {
+                    row.dataset.variantColor = rowColor(row);
+                    row.dataset.variantHex = rowHex(row);
+                };
+
+                const colorGroups = () => {
+                    const groups = new Map();
+
+                    list.querySelectorAll('[data-variant-row]').forEach((row) => {
+                        syncRowData(row);
+
+                        const color = row.dataset.variantColor;
+                        if (!color) return;
+
+                        const hex = row.dataset.variantHex || '';
+                        const key = colorKey(color, hex);
+                        const current = groups.get(key) || { key, color, hex, count: 0 };
+                        current.count += 1;
+                        groups.set(key, current);
+                    });
+
+                    return [...groups.values()];
+                };
+
+                const applyFilter = () => {
+                    list.querySelectorAll('[data-variant-row]').forEach((row) => {
+                        syncRowData(row);
+
+                        const key = colorKey(row.dataset.variantColor || '', row.dataset.variantHex || '');
+                        row.hidden = activeKey !== '__all' && key !== activeKey;
+                    });
+                };
+
+                const setActive = (key, label = 'Tutti') => {
+                    activeKey = key;
+                    activeColorLabel.textContent = label;
+
+                    allButton.classList.toggle('is-active', activeKey === '__all');
+                    options.querySelectorAll('[data-variant-color-filter]').forEach((button) => {
+                        button.classList.toggle('is-active', button.dataset.variantColorFilter === activeKey);
+                    });
+
+                    applyFilter();
+                };
+
+                const renderOptions = () => {
+                    const groups = colorGroups();
+
+                    toolbar.hidden = groups.length === 0;
+                    copy.hidden = groups.length === 0;
+                    options.innerHTML = '';
+
+                    groups.forEach((group) => {
+                        const button = document.createElement('button');
+                        button.className = 'admin-variant-color-pill';
+                        button.type = 'button';
+                        button.dataset.variantColorFilter = group.key;
+                        button.dataset.variantColorLabel = group.color;
+                        button.dataset.variantColorHex = group.hex;
+                        button.style.setProperty('--swatch-color', normalizeHex(group.hex));
+                        button.setAttribute('aria-label', `Filtra varianti colore ${group.color}`);
+                        button.innerHTML = '<span class="admin-variant-color-swatch" aria-hidden="true"></span>';
+                        options.appendChild(button);
+                    });
+
+                    if (activeKey !== '__all' && !groups.some((group) => group.key === activeKey)) {
+                        setActive('__all');
+                        return;
+                    }
+
+                    setActive(activeKey, activeKey === '__all'
+                        ? 'Tutti'
+                        : groups.find((group) => group.key === activeKey)?.color || 'Tutti');
+                };
+
+                allButton.addEventListener('click', () => setActive('__all'));
+
+                options.addEventListener('click', (event) => {
+                    const button = event.target.closest('[data-variant-color-filter]');
+                    if (!button) return;
+
+                    setActive(button.dataset.variantColorFilter, button.dataset.variantColorLabel);
+                });
+
+                list.addEventListener('input', (event) => {
+                    if (!event.target.matches('[data-variant-color-input], [data-variant-hex-input]')) return;
+
+                    renderOptions();
+                });
+
+                list.addEventListener('repeater:added', (event) => {
+                    const row = event.detail.row;
+
+                    if (activeKey !== '__all') {
+                        const activeButton = [...options.querySelectorAll('[data-variant-color-filter]')]
+                            .find((button) => button.dataset.variantColorFilter === activeKey);
+                        row.querySelector('[data-variant-color-input]').value = activeButton?.dataset.variantColorLabel || '';
+                        row.querySelector('[data-variant-hex-input]').value = activeButton?.dataset.variantColorHex || '';
+                    }
+
+                    renderOptions();
+                });
+
+                list.addEventListener('repeater:removed', renderOptions);
+
+                renderOptions();
             };
 
             setupRepeater({
@@ -233,6 +366,8 @@
                 rowSelector: '[data-variant-row]',
                 removeSelector: '[data-remove-variant]',
             });
+
+            setupVariantColorFilter();
 
             setupRepeater({
                 listSelector: '[data-zone-list]',
