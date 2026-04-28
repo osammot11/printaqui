@@ -285,6 +285,10 @@ h2 {
     aspect-ratio: 1 / 1;
 }
 
+.ratio-4-5 {
+    aspect-ratio: 4 / 5;
+}
+
 .collection-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

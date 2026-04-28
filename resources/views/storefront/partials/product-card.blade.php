@@ -4,10 +4,9 @@
 
 <article class="card">
     <a href="{{ route('products.show', $product) }}">
-        <img class="product-media square-ratio" src="{{ $image }}" alt="{{ $product->name }}">
+        <img class="product-media ratio-4-5" src="{{ $image }}" alt="{{ $product->name }}">
     </a>
     <div class="stack-small top-margin-mid">
-        <div class="muted">{{ $product->category?->name ?? 'Apparel' }}</div>
         <h5>{{ $product->name }}</h5>
         <p>€ {{ number_format($product->currentPriceCents() / 100, 2, ',', '.') }}</p>
     </div>
