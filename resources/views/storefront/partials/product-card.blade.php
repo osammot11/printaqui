@@ -4,7 +4,7 @@
 
 <article class="card">
     <a href="{{ route('products.show', $product) }}">
-        <img class="product-media" src="{{ $image }}" alt="{{ $product->name }}">
+        <img class="product-media square-ratio" src="{{ $image }}" alt="{{ $product->name }}">
     </a>
     <div class="stack-small top-margin-mid">
         <div class="muted">{{ $product->category?->name ?? 'Apparel' }}</div>
