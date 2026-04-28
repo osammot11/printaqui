@@ -469,14 +469,12 @@ th {
 }
 
 .product-color-pill:hover {
-    border-color: var(--primary);
-    background: rgba(255, 231, 25, .12);
-    transform: translateY(-1px);
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
 }
 
 .product-color-pill.is-active {
     border-color: var(--primary);
-    background: rgba(255, 231, 25, .14);
 }
 
 .product-color-swatch {

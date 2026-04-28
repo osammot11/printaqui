@@ -135,7 +135,7 @@
                         <div class="row"><label>Taglia</label><input name="variants[__INDEX__][size]" placeholder="S, M, L..."></div>
                         <div class="row"><label>Colore</label><input name="variants[__INDEX__][color]" placeholder="Nero, Bianco..." data-variant-color-input></div>
                         <div class="row"><label>Hex</label><input name="variants[__INDEX__][hex_color]" placeholder="#111111" data-variant-hex-input></div>
-                        <div class="row"><label>Stock</label><input type="number" min="0" name="variants[__INDEX__][stock]" value="0"></div>
+                        <div class="row"><label>Stock</label><input type="number" min="0" name="variants[__INDEX__][stock]" value="1000"></div>
                         <div class="row"><label>SKU variante</label><input name="variants[__INDEX__][sku]" placeholder="Generato se vuoto"></div>
                         <div class="row"><label>Attiva</label><input style="width:auto" type="checkbox" name="variants[__INDEX__][is_active]" value="1" checked></div>
                         <div class="row variant-row-actions">

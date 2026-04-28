@@ -67,7 +67,7 @@
                             </button>
                         @endforeach
                     </div>
-                    <p class="muted product-color-active-copy">Colore selezionato: <strong data-active-color-label>{{ $variantColorGroups->first()['label'] }}</strong></p>
+                    <p class="top-margin-mid muted product-color-active-copy">Colore selezionato: <strong data-active-color-label>{{ $variantColorGroups->first()['label'] }}</strong></p>
 
                     <table class="top-margin-mid product-variant-table">
                         <thead>
