@@ -944,6 +944,7 @@ th {
 .footer-column {
     display: grid;
     gap: 10px;
+    align-content: baseline;
 }
 
 .footer-column>span:first-child {
