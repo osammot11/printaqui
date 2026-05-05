@@ -94,13 +94,6 @@
                     </div>
 
                     <div class="footer-column">
-                        <span>Workspace</span>
-                        <a href="{{ route('checkout.show') }}">Checkout</a>
-                        <a href="{{ route('admin.dashboard') }}">Admin</a>
-                        <a href="{{ route('admin.orders.index') }}">Ordini</a>
-                    </div>
-
-                    <div class="footer-column">
                         <span>Contatti</span>
                         <a href="{{ $contactUrl }}" target="_blank" rel="noreferrer">Instagram</a>
                         <span class="footer-note">Whatsapp</span>
